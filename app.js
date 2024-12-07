@@ -1,6 +1,6 @@
 import promptSync from "prompt-sync";
 import menues from "./menu.js";
-import paradigms from "./paradigms/paradigmsMethods.js";
+import paradigms from "./paradigms/paradigmSelection.js";
 
 const prompt = promptSync({ sigint: true });
 
@@ -39,11 +39,27 @@ async function handleBookMenu(book) {
     menues.showBookMenu();
     let inp = prompt("Input: ");
 
-    switch (inp) {
-      case "5":
-        return;
-      default:
-        console.log("Option not available.");
+    try {
+      switch (inp) {
+        case "1": /* Add book */ {
+          break;
+        }
+        case "2": /* Remove book */ {
+          break;
+        }
+        case "3": /* Update book */ {
+          break;
+        }
+        case "4": /* Find book */ {
+          break;
+        }
+        case "5":
+          return;
+        default:
+          console.log("Option not available.");
+      }
+    } catch (err) {
+      console.log(err.message);
     }
   }
 }
@@ -54,6 +70,21 @@ async function handleMemberMenu(member) {
     let inp = prompt("Input: ");
 
     switch (inp) {
+      case "1": /*Register member*/ {
+        break;
+      }
+      case "2": /*View profile*/ {
+        break;
+      }
+      case "3": /*Update profiler*/ {
+        break;
+      }
+      case "4": /*Borrow Book*/ {
+        break;
+      }
+      case "5": /*Return Book*/ {
+        break;
+      }
       case "6":
         return;
       default:
@@ -68,6 +99,13 @@ async function handleReportMenu(report) {
     let inp = prompt("Input: ");
 
     switch (inp) {
+      case "1": /* List available books */ {
+        break;
+      }
+
+      case "2": /*Borrowings history*/ {
+        break;
+      }
       case "3":
         return;
       default:
