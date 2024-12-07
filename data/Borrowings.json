@@ -4,7 +4,6 @@
     "bookId": "bookId",
     "bookTitle": "bookName",
     "borrowDate": "2024-12-06T19:32:42.055Z",
-    "dueDate": "2024-12-07T19:32:42.055Z",
     "duration": 1,
     "fines": 0
   }
