@@ -69,26 +69,30 @@ async function handleMemberMenu(member) {
     menues.showMemberMenu();
     let inp = prompt("Input: ");
 
-    switch (inp) {
-      case "1": /*Register member*/ {
-        break;
+    try {
+      switch (inp) {
+        case "1": /*Register member*/ {
+          break;
+        }
+        case "2": /*View profile*/ {
+          break;
+        }
+        case "3": /*Update profiler*/ {
+          break;
+        }
+        case "4": /*Borrow Book*/ {
+          break;
+        }
+        case "5": /*Return Book*/ {
+          break;
+        }
+        case "6":
+          return;
+        default:
+          console.log("Option not available.");
       }
-      case "2": /*View profile*/ {
-        break;
-      }
-      case "3": /*Update profiler*/ {
-        break;
-      }
-      case "4": /*Borrow Book*/ {
-        break;
-      }
-      case "5": /*Return Book*/ {
-        break;
-      }
-      case "6":
-        return;
-      default:
-        console.log("Option not available.");
+    } catch (err) {
+      console.log(err.message);
     }
   }
 }
@@ -98,18 +102,22 @@ async function handleReportMenu(report) {
     menues.showReportMenu();
     let inp = prompt("Input: ");
 
-    switch (inp) {
-      case "1": /* List available books */ {
-        break;
-      }
+    try {
+      switch (inp) {
+        case "1": /* List available books */ {
+          break;
+        }
 
-      case "2": /*Borrowings history*/ {
-        break;
+        case "2": /*Borrowings history*/ {
+          break;
+        }
+        case "3":
+          return;
+        default:
+          console.log("Option not available.");
       }
-      case "3":
-        return;
-      default:
-        console.log("Option not available.");
+    } catch (err) {
+      console.log(err.message);
     }
   }
 }
