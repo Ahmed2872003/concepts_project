@@ -1,0 +1,9 @@
+[
+  {
+    "id": "unique id",
+    "name": "unique name",
+    "age": 21,
+    "gender": "male",
+    "email": "example@gmail.com"
+  }
+]
