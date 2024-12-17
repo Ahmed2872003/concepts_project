@@ -38,11 +38,14 @@ async function removeBook(filter) {
 async function updateBook(filter, newBookData) {
   const books = await readFile(bookDataPath);
 
+  if (find(books, { title: newBookData.title }).length > 0)
+    throw new Error("There exist a book with that title");
+
   const foundBooks = find(books, filter);
 
   if (foundBooks.length <= 0) throw new Error("No book found with this data");
 
-  update(foundBooks, newBookData);
+  update(foundBooks, newBookData); // this will update the objects that exist in books
 
   await writeFile(bookDataPath, books);
 }

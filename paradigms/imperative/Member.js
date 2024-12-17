@@ -43,6 +43,9 @@ async function updateMemberDetails(filter, newMemberData) {
   if (foundMembers.length <= 0)
     throw new Error("No member found with that data");
 
+  if (find(members, { name: newMemberData.name }).length > 0)
+    throw new Error("This name has been taken before");
+
   update(foundMembers, newMemberData);
 
   await writeFile(memberDataPath, members);
