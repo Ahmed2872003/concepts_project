@@ -64,7 +64,7 @@ async function handleBookMenu(book) {
           let bookTitle =
             prompt("Enter book title to be removed: ") || undefined;
 
-          await book.removeBook(bookTitle);
+          await book.removeBook({ title: bookTitle });
 
           console.log(`${bookTitle} book removed successfully.`);
 
@@ -93,7 +93,7 @@ async function handleBookMenu(book) {
             available: booleanMap[newAvailable],
           });
 
-          await book.updateBook(title, newData);
+          await book.updateBook({ title }, newData);
 
           console.log("Book updated successfully");
 
@@ -131,7 +131,7 @@ async function handleBookMenu(book) {
           console.log("Option not available.");
       }
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   }
 }
@@ -169,7 +169,9 @@ async function handleMemberMenu(member, book) {
         case "2": /*View profile*/ {
           let memberName = prompt("Enter member name: ") || undefined;
 
-          const memberData = await member.viewMemberDetails(memberName);
+          const memberData = await member.viewMemberDetails({
+            name: memberName,
+          });
 
           console.log(memberData);
           break;
@@ -198,7 +200,7 @@ async function handleMemberMenu(member, book) {
             email: newEmail,
           });
 
-          await member.updateMemberDetails(memberName, newData);
+          await member.updateMemberDetails({ name: memberName }, newData);
 
           console.log("Member profile updated successfully");
           break;
@@ -220,8 +222,6 @@ async function handleMemberMenu(member, book) {
             duration ? +duration : duration
           );
 
-          await book.updateBook(bookTitle, { available: false });
-
           console.log("Book is borrowed");
           break;
         }
@@ -234,7 +234,7 @@ async function handleMemberMenu(member, book) {
           console.log("Option not available.");
       }
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   }
 }
@@ -285,7 +285,7 @@ async function handleReportMenu(report) {
           console.log("Option not available.");
       }
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   }
 }

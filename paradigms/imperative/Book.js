@@ -1,99 +1,54 @@
 import { readFile, writeFile } from "../../utils/file.js";
 import { randomUUID } from "crypto";
-
-import customFilter from "./functions/customFilter.js";
+import { find, remove, update } from "./functions/arrayUtilities.js";
 
 const bookDataPath = "./data/Book.json";
 
 async function addBook(bookData) {
-  // const bookId = randomUUID();
-  try {
-    const fileC = await readFile(bookDataPath, "utf-8");
-    const books = JSON.parse(fileC);
+  const books = await readFile(bookDataPath);
 
+  if (find(books, { title: bookData.title }).length >= 1)
+    throw new Error("Book title has been taken");
 
-    const bookWithId = { id: randomUUID(), ...bookData };
+  bookData.id = randomUUID();
+  bookData.available = true;
 
-    books.push(bookWithId);
+  books.push(bookData);
 
-    await writeFile(bookDataPath, JSON.stringify(books, null, 2), "utf-8");
-    console.log("Book added successfully:", bookWithId);
-
-    console.log(`From imperative ${JSON.stringify(bookData)}`);
-
-  } catch (error) {
-    console.error("Error Book not added", error);
-  }
+  await writeFile(bookDataPath, books);
 }
 
+async function removeBook(filter) {
+  const books = await readFile(bookDataPath);
 
-async function removeBook(bookTitle) {
-  try {
-    const fileC = await readFile(bookDataPath, "utf-8");
-    const books = JSON.parse(fileC);
+  if (!find(books, filter).length)
+    throw new Error("No book found with this data");
 
-    const FilterBooks = customFilter(books, (book) => book.title !== bookTitle);
+  const newBooks = remove(books, filter);
 
-    await writeFile(bookDataPath, JSON.stringify(FilterBooks, null, 2), "utf-8");
-    console.log(`Book with title "${bookTitle}" has been removed successfully.`);
-  }
-
-  catch (error) {
-    console.error("book not remove!!", error)
-
-  }
-
+  await writeFile(bookDataPath, newBooks);
 }
 
-async function updateBook(bookTitle, newBookData) {
-  try {
-    const fileC = await readFile(bookDataPath, "utf-8");
-    const books = JSON.parse(fileC);
+async function updateBook(filter, newBookData) {
+  const books = await readFile(bookDataPath);
 
-    let updateSuccess = false;
-    for (let i = 0; i < books.length; i++) {
-      if (books[i].title == bookTitle) {
-        books[i] = { ...books[i], ...newBookData };
-        updateSuccess = true;
-        break;
-      }
-    }
-    if (!updateSuccess) {
-      console.log(`no book has this title "${bookTitle}"`);
-    }
-    await writeFile(bookDataPath, JSON.stringify(books, null, 2), "utf-8");
+  const foundBooks = find(books, filter);
 
-    console.log(`Book with title "${bookTitle}" has been updated`);
-  } catch (error) {
-    console.error("Error cannot updating books:", error);
-  }
+  if (foundBooks.length <= 0) throw new Error("No book found with this data");
 
+  update(foundBooks, newBookData);
+
+  await writeFile(bookDataPath, books);
 }
 
 async function searchBooks(filter) {
-  try {
-    const fileC = await readFile(bookDataPath, "utf-8");
-    const books = JSON.parse(fileC);
+  const books = await readFile(bookDataPath);
 
-    const matchingBooks = customFilter(books, (book) => {
-      for (let key in filter) {
-        if (book[key] !== filter[key]) {
-          return false; 
-        }
-      }
-      return true; 
-    });
+  const foundBooks = find(books, filter);
 
-    if (matchingBooks.length > 0) {
-      console.log("result:", matchingBooks);
-    } else {
-      console.log("Not found !");
-    }
+  if (foundBooks.length <= 0) throw new Error("No books found with that data");
 
-    return matchingBooks; 
-  } catch (error) {
-    console.error("Error searching for books:", error);
-  }
+  return foundBooks;
 }
 
 export default { addBook, removeBook, updateBook, searchBooks };

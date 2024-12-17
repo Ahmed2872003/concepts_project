@@ -6,5 +6,13 @@
     "borrowDate": "2024-12-06T19:32:42.055Z",
     "duration": 1,
     "fines": 0
+  },
+  {
+    "memberId": "111bf66b-a117-4970-82f0-5456ed9eca4e",
+    "bookId": "ab68183b-ff13-4b06-ad65-fc87f9fc36a5",
+    "bookTitle": "The darkness",
+    "borrowDate": "2024-12-17T06:08:09.103Z",
+    "duration": 7,
+    "fines": 0
   }
 ]

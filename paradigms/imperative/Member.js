@@ -2,171 +2,87 @@ import { readFile, writeFile } from "../../utils/file.js";
 import { randomUUID } from "crypto";
 import calcFee from "../../utils/feeCalc.js";
 
-import customFind from "./functions/customFind.js"
-import customFilter from "./functions/customFilter.js";
-import { error } from "console";
+import bookC from "./Book.js";
+
+import { find, update } from "./functions/arrayUtilities.js";
 
 const memberDataPath = "./data/Member.json";
 const borrowDataPath = "./data/Borrowings.json";
 
-
-// try{
-
-// }catch (error) {
-//   console.error("Error:", error);
-//   throw error;
-// }
-
-
 async function registerMember(memberData) {
-  try {
-    const memberId = randomUUID();
+  const members = await readFile(memberDataPath);
 
-    const data = await readFile(memberDataPath, "utf-8");
-    const members = data ? JSON.parse(data) : [];
+  if (find(members, { name: memberData.name }).length >= 1)
+    throw new Error("This name has been taken");
 
-    const newMember = { id: memberId, ...memberData };
+  memberData.id = randomUUID();
 
-    members.push(newMember);
+  members.push(memberData);
 
-    await writeFile(memberDataPath, JSON.stringify(members, null, 2), "utf-8");
-    console.log("Done!! member register successful")
-    return newMember;
-  } catch (error) {
-    console.error("Error registering member:", error);
-    throw error;
-  }
+  await writeFile(memberDataPath, members);
 }
 
+async function viewMemberDetails(filter) {
+  const members = await readFile(memberDataPath);
 
-async function viewMemberDetails(memberName) {
-  try {
-    const data = await readFile(memberDataPath, "utf-8");
-    const members = data ? JSON.parse(data) : [];
+  const foundMembers = find(members, filter);
 
-    // Find the member by using customFind(not build-in)
-    const member = customFind(members, m => m.name === memberName);
+  if (foundMembers.length <= 0)
+    throw new Error("No member found with that data");
 
-    if (!member) {
-      throw new Error(`Member "${memberName}" not found.`);
-    }
-
-    return member;
-  } catch (error) {
-    console.error("cannot view member details:", error);
-    throw error;
-  }
+  return foundMembers;
 }
 
+async function updateMemberDetails(filter, newMemberData) {
+  const members = await readFile(memberDataPath);
 
+  const foundMembers = find(members, filter);
 
-async function updateMemberDetails(memberName, newMemberData) {
-  const data = await readFile(memberDataPath, "utf-8");
-  const members = data ? JSON.parse(data) : [];
+  if (foundMembers.length <= 0)
+    throw new Error("No member found with that data");
 
-  const matchMember = members.customFilter(members, (member) => member.name == memberName) //determine array
-  //if Array not have the member after filtering
-  if (matchMember.length === 0) {
-    throw new Error(`'${memberName}' not found  `)
-  }
-  // else {
-  const memberPlace = members.indexOf(matchMember[0])
-  members[memberPlace] = { ...members[memberPlace], ...newMemberData };
-  // }
-  await writeFile(memberDataPath, JSON.stringify(members, null, 2), "utf-8");
+  update(foundMembers, newMemberData);
+
+  await writeFile(memberDataPath, members);
 }
 
 async function borrowBook(memberName, bookTitle, duration) {
-  try {
-    const memberData = await readFile(memberDataPath, "utf-8");
-    const members = memberData ? JSON.parse(memberData) : [];
+  const member = (await viewMemberDetails({ name: memberName }))[0];
 
-    const borrowData = await readFile(borrowDataPath, "utf-8");
-    const borrowingBooks = borrowData ? JSON.parse(borrowData) : [];
+  const bookFilter = { title: bookTitle };
 
-    //make sure the user is exist in members files 
-    const member_name = members.customFind(members, member => member.name === memberName)
-    if (!member_name) {
-      throw new Error(`cannot found '${memberName}'`)
-    }
+  const book = (await bookC.searchBooks(bookFilter))[0];
 
+  if (!book.available) throw new Error("This book has already been taken");
 
-    // calc fee
-    const fee = calcFee(duration) 
+  const borrowings = await readFile(borrowDataPath);
 
-    //create new record of borrowing book
-    const borrowingEntity={
-      id:randomUUID(),
-      memberId:member_name.id,
-      bookTitle,
-      fee,
-    }
+  const borrowObj = {
+    memberId: member.id,
+    bookId: book.id,
+    bookTitle: book.title,
+    borrowDate: new Date().toISOString(),
+    duration,
+    fines: 0,
+  };
 
-    borrowingBooks.push(borrowingEntity);
-    await writeFile(borrowDataPath, JSON.stringify(borrowingBooks, null, 2), "utf-8");
+  borrowings.push(borrowObj);
 
-    return borrowingEntity;
-  }catch (error) {
-    console.error("Error:", error);
-    throw error;
-  }
-  
+  await writeFile(borrowDataPath, borrowings);
 
+  await bookC.updateBook(bookFilter, { available: false });
 }
 
 async function returnBook(bookTitle, memberName) {
-  try {
+  const member = (await viewMemberDetails({ name: memberName }))[0];
 
-    const memberData = await readFile(memberDataPath, "utf-8");
-    const members = memberData ? JSON.parse(memberData) : [];
+  const bookFilter = { title: bookTitle };
 
-    const borrowData = await readFile(borrowDataPath, "utf-8");
-    const borrowings = borrowData ? JSON.parse(borrowData) : [];
+  const book = (await bookC.searchBooks(bookFilter))[0];
 
+  if (book.available) throw new Error("This book is not borrowed yet.");
 
-    const member = members.find(m => m.name === memberName);
-    if (!member) {
-      throw new Error(`"${memberName}" not found.`);
-    }
-
-    // Find the borrowing record by book title and memberId
-    const borrowingIndex = borrowings.findIndex(b => b.bookTitle === bookTitle && b.memberId === member.id);
-
-    if (borrowingIndex === -1) {
-      throw new Error(`No borrowing record found for "${bookTitle}" by member "${memberName}".`);
-    }
-
-    // Get the borrowing record
-    const borrowingRecord = borrowings[borrowingIndex];
-
-    // Set the return date
-    const returnDate = new Date();
-    
-    // Calculate the duration the book was borrowed (in days)
-    const borrowedAt = new Date(borrowingRecord.borrowedAt);
-    const daysBorrowed = Math.ceil((returnDate - borrowedAt) / (1000 * 3600 * 24));
-
-    // Optionally, you can adjust the fee or perform any additional logic based on the return duration
-
-    // Remove the borrowing record from the list
-    borrowings.splice(borrowingIndex, 1);
-
-    // Write the updated borrowings back to the file
-    await writeFile(borrowDataPath, JSON.stringify(borrowings, null, 2), "utf-8");
-
-    // Return the return details
-    return {
-      bookTitle,
-      memberName,
-      borrowedAt: borrowingRecord.borrowedAt,
-      returnDate: returnDate.toISOString(),
-      daysBorrowed,
-      fee: borrowingRecord.fee,
-    };
-  } catch (error) {
-    console.error("Error returning book:", error);
-    throw error;
-  }
+  // continue form here
 }
 
 export default {
