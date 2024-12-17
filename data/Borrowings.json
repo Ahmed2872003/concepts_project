@@ -4,6 +4,7 @@
     "bookId": "bookId",
     "bookTitle": "bookName",
     "borrowDate": "2024-12-06T19:32:42.055Z",
+    "returnDate": "",
     "duration": 1,
     "fines": 0
   },
@@ -11,8 +12,36 @@
     "memberId": "111bf66b-a117-4970-82f0-5456ed9eca4e",
     "bookId": "ab68183b-ff13-4b06-ad65-fc87f9fc36a5",
     "bookTitle": "The darkness",
-    "borrowDate": "2024-12-17T06:08:09.103Z",
+    "borrowDate": "2024-12-17T15:15:35.331Z",
+    "returnDate": "2024-12-17T15:24:28.044Z",
     "duration": 7,
+    "fines": 0
+  },
+  {
+    "memberId": "111bf66b-a117-4970-82f0-5456ed9eca4e",
+    "bookId": "ab68183b-ff13-4b06-ad65-fc87f9fc36a5",
+    "bookTitle": "The darkness",
+    "borrowDate": "2024-12-17T15:19:43.561Z",
+    "returnDate": "2024-12-17T15:24:28.044Z",
+    "duration": 5,
+    "fines": 0
+  },
+  {
+    "memberId": "111bf66b-a117-4970-82f0-5456ed9eca4e",
+    "bookId": "ab68183b-ff13-4b06-ad65-fc87f9fc36a5",
+    "bookTitle": "The darkness",
+    "borrowDate": "2024-12-17T15:24:13.731Z",
+    "returnDate": "2024-12-17T15:24:28.044Z",
+    "duration": 10,
+    "fines": 0
+  },
+  {
+    "memberId": "111bf66b-a117-4970-82f0-5456ed9eca4e",
+    "bookId": "ab68183b-ff13-4b06-ad65-fc87f9fc36a5",
+    "bookTitle": "The darkness",
+    "borrowDate": "2024-12-17T15:25:07.075Z",
+    "returnDate": "2024-12-17T15:32:37.755Z",
+    "duration": 10,
     "fines": 0
   }
 ]

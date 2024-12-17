@@ -9,6 +9,8 @@ import { find, update } from "./functions/arrayUtilities.js";
 const memberDataPath = "./data/Member.json";
 const borrowDataPath = "./data/Borrowings.json";
 
+const std_fee = 10;
+
 async function registerMember(memberData) {
   const members = await readFile(memberDataPath);
 
@@ -62,6 +64,7 @@ async function borrowBook(memberName, bookTitle, duration) {
     bookId: book.id,
     bookTitle: book.title,
     borrowDate: new Date().toISOString(),
+    returnDate: "",
     duration,
     fines: 0,
   };
@@ -82,7 +85,36 @@ async function returnBook(bookTitle, memberName) {
 
   if (book.available) throw new Error("This book is not borrowed yet.");
 
-  // continue form here
+  const borrowings = await readFile(borrowDataPath);
+
+  let memberBorrowing = find(borrowings, {
+    memberId: member.id,
+    bookId: book.id,
+    returnDate: "",
+  });
+
+  memberBorrowing = memberBorrowing[memberBorrowing.length - 1];
+
+  if (!memberBorrowing) throw new Error("This member doesn't borrow that book");
+
+  const borrowDate = new Date(book.borrowDate);
+
+  const returnDate = new Date();
+
+  const duration = memberBorrowing.duration;
+
+  const fee = calcFee(borrowDate, returnDate, duration, std_fee);
+
+  update([memberBorrowing], {
+    fines: fee,
+    returnDate: returnDate.toISOString(),
+  });
+
+  await writeFile(borrowDataPath, borrowings);
+
+  await bookC.updateBook({ id: book.id }, { available: true });
+
+  return fee;
 }
 
 export default {

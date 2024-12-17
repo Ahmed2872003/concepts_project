@@ -226,6 +226,16 @@ async function handleMemberMenu(member, book) {
           break;
         }
         case "5": /*Return Book*/ {
+          let [memberName = undefined, bookTitle = undefined] = prompt(
+            "Enter member name, book title resprectivily seperated by (,): "
+          )
+            .split(inputRegexSplitter)
+            .map((inp) => (inp === "" ? undefined : inp));
+
+          const fee = await member.returnBook(bookTitle, memberName);
+
+          console.log(`Book has been successfully returned with fee ${fee}`);
+
           break;
         }
         case "6":
@@ -259,6 +269,8 @@ async function handleReportMenu(report) {
           console.log(availableBooks);
 
           console.log("---------------------------------------------------");
+
+          break;
         }
 
         case "2": /*Borrowings history*/ {

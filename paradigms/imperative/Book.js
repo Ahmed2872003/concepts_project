@@ -21,8 +21,14 @@ async function addBook(bookData) {
 async function removeBook(filter) {
   const books = await readFile(bookDataPath);
 
-  if (!find(books, filter).length)
-    throw new Error("No book found with this data");
+  const removedBooks = find(books, filter);
+
+  if (!removedBooks.length) throw new Error("No book found with this data");
+
+  for (let removedBook of removedBooks) {
+    if (!removedBook.available)
+      throw new Error("Can not remove books borrowed by someone");
+  }
 
   const newBooks = remove(books, filter);
 
